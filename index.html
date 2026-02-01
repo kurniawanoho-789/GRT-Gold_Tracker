@@ -682,6 +682,86 @@
             background: rgba(220, 38, 38, 0.2);
             border-color: #ef4444;
         }
+
+        /* Responsive Mobile - APP SCREEN ONLY */
+        @media (max-width: 768px) {
+            .app-body {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                display: flex;
+                overflow-x: auto;
+                padding: 10px 0;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .nav-item {
+                padding: 10px 20px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .nav-item.active {
+                border-left: none;
+                border-bottom-color: #667eea;
+            }
+
+            .content {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 10px;
+            }
+
+            .timeline-item {
+                padding: 15px 15px 15px 40px;
+            }
+
+            .timeline-bullet {
+                left: 2px;
+            }
+
+            .timeline-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .delete-btn {
+                width: 100%;
+            }
+
+            .timeline-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .amount {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .welcome-card {
+                padding: 20px;
+            }
+
+            .welcome-card h2 {
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
