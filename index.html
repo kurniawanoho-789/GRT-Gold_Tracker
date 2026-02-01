@@ -558,6 +558,130 @@
             margin-bottom: 20px;
             opacity: 0.3;
         }
+
+        /* Timeline Feed */
+        .timeline {
+            position: relative;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #fb923c 0%, #d97706 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 20px 20px 20px 60px;
+            margin-bottom: 10px;
+            background: rgba(217, 119, 6, 0.03);
+            border-left: 3px solid transparent;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .timeline-item:hover {
+            background: rgba(217, 119, 6, 0.08);
+            border-left-color: #fb923c;
+        }
+
+        .timeline-bullet {
+            position: absolute;
+            left: 12px;
+            top: 24px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fb923c;
+            border: 3px solid #000;
+            box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.2);
+        }
+
+        .timeline-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .timeline-info {
+            flex: 1;
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .member-name {
+            font-weight: 600;
+            color: #fb923c;
+            font-size: 16px;
+        }
+
+        .currency-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .currency-badge.gold {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 50%);
+            color: #000;
+        }
+
+        .currency-badge.lucent {
+            background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%);
+            color: #fff;
+        }
+
+        .admin-tag {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 8px 0;
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .delete-btn {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #ef4444;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .delete-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -667,9 +791,10 @@
 
                         <h2>Feed Setoran Terkini</h2>
                         <div class="card">
-                            <div class="empty-state">
-                                <p>Belum ada setoran</p>
-                                <p style="font-size: 12px; margin-top: 10px;">Setoran akan muncul di sini setelah Anda mulai input data</p>
+                            <div id="feedContainer">
+                                <div class="empty-state">
+                                    <p>Memuat data...</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -780,6 +905,9 @@
                     
                     // Load member dropdown untuk form setoran
                     await loadMemberDropdown();
+                    
+                    // Load feed setoran
+                    loadFeedSetoran();
                 }
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -813,6 +941,93 @@
                 }
             } catch (error) {
                 console.error('Error loading member dropdown:', error);
+            }
+        }
+
+        // Load Feed Setoran (Real-time)
+        function loadFeedSetoran() {
+            const feedContainer = document.getElementById('feedContainer');
+            
+            // Real-time listener
+            db.collection('setoran')
+                .orderBy('createdAt', 'desc')
+                .limit(50)
+                .onSnapshot((snapshot) => {
+                    if (snapshot.empty) {
+                        feedContainer.innerHTML = `
+                            <div class="empty-state">
+                                <p>Belum ada setoran</p>
+                                <p style="font-size: 12px; margin-top: 10px;">Setoran akan muncul di sini setelah ada input data</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let html = '<ul class="timeline">';
+                    
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const canDelete = currentUserData.role === 'admin' || data.memberId === currentUser.uid;
+                        
+                        // Format timestamp
+                        let timeStr = 'Baru saja';
+                        if (data.createdAt) {
+                            const date = data.createdAt.toDate();
+                            const options = { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                            };
+                            timeStr = date.toLocaleString('id-ID', options);
+                        }
+
+                        const currencyClass = data.type === 'gold' ? 'gold' : 'lucent';
+                        const currencyIcon = data.type === 'gold' ? '💰' : '✨';
+                        const currencyName = data.type === 'gold' ? 'Gold' : 'Lucent';
+
+                        html += `
+                            <li class="timeline-item">
+                                <div class="timeline-bullet"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-info">
+                                        <div class="timeline-header">
+                                            <span class="member-name">${data.memberName}</span>
+                                            <span class="currency-badge ${currencyClass}">${currencyIcon} ${currencyName}</span>
+                                            ${data.byAdmin ? '<span class="admin-tag">by admin</span>' : ''}
+                                        </div>
+                                        <div class="amount">${data.amount.toLocaleString('id-ID')}</div>
+                                        <div class="timestamp">🕐 ${timeStr}</div>
+                                    </div>
+                                    ${canDelete ? `<button class="delete-btn" onclick="deleteSetoran('${doc.id}')">🗑️ Hapus</button>` : ''}
+                                </div>
+                            </li>
+                        `;
+                    });
+                    
+                    html += '</ul>';
+                    feedContainer.innerHTML = html;
+                }, (error) => {
+                    console.error('Error loading feed:', error);
+                    feedContainer.innerHTML = `
+                        <div class="empty-state">
+                            <p style="color: #ef4444;">Error memuat data</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // Delete Setoran
+        async function deleteSetoran(setoranId) {
+            if (!confirm('Yakin ingin menghapus setoran ini?')) return;
+
+            try {
+                await db.collection('setoran').doc(setoranId).delete();
+                // Feed akan auto-update karena real-time listener
+            } catch (error) {
+                alert('Gagal menghapus setoran: ' + error.message);
+                console.error('Error deleting setoran:', error);
             }
         }
 
@@ -1045,6 +1260,7 @@
                 if (currentUserData.role !== 'admin') {
                     document.getElementById('setoranMember').selectedIndex = 1;
                 }
+                // Feed akan auto-update via real-time listener
                 
             } catch (error) {
                 showError('setoranError', 'Gagal menyimpan setoran: ' + error.message);
