@@ -302,14 +302,10 @@
         .app-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px 30px;
+            padding: 12px 30px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
-        }
-
-        .app-header h1 {
-            font-size: 24px;
         }
 
         .user-info {
@@ -386,8 +382,8 @@
         }
 
         .card {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: #000000;
+            border: 1px solid rgba(217, 119, 6, 0.3);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
@@ -797,7 +793,6 @@
         <!-- App Screen -->
         <div class="app-screen" id="appScreen">
             <div class="app-header">
-                <h1>🏆 GRT Gold Tracker</h1>
                 <div class="user-info">
                     <span class="user-badge" id="userRole">Member</span>
                     <span id="userName">User</span>
@@ -832,14 +827,14 @@
                             <form id="setoranForm" style="max-width: 500px; margin: 0 auto;">
                                 <div class="form-group">
                                     <label for="setoranMember">Nama Member</label>
-                                    <select id="setoranMember" required style="width: 100%; padding: 12px 15px; border: 2px solid rgba(217, 119, 6, 0.3); background: rgba(217, 119, 6, 0.05); color: #ffffff; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                                    <select id="setoranMember" required>
                                         <option value="">Pilih Member...</option>
                                     </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="setoranType">Jenis Mata Uang</label>
-                                    <select id="setoranType" required style="width: 100%; padding: 12px 15px; border: 2px solid rgba(217, 119, 6, 0.3); background: rgba(217, 119, 6, 0.05); color: #ffffff; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                                    <select id="setoranType" required>
                                         <option value="">Pilih Mata Uang...</option>
                                         <option value="gold">💰 Gold</option>
                                         <option value="lucent">✨ Lucent</option>
@@ -889,13 +884,13 @@
                                 <h3>📝 Registrasi Member Baru</h3>
                                 <div class="error-message" id="registerError"></div>
                                 <div class="success-message" id="registerSuccess"></div>
-                                <form id="registerForm">
+                                <form id="registerForm" style="max-width: 500px; margin: 0 auto;">
                                     <div class="form-inline">
                                         <div class="form-group">
                                             <label for="registerName">Nama Member</label>
                                             <input type="text" id="registerName" placeholder="Hanya huruf, tanpa angka/simbol" required>
                                         </div>
-                                        <button type="submit" class="btn">Register</button>
+                                        <button type="submit" class="btn" style="max-width: none; margin: 0;">Register</button>
                                     </div>
                                 </form>
                             </div>
@@ -917,7 +912,7 @@
                                 <h3>🔒 Ubah Password</h3>
                                 <div class="error-message" id="passwordError"></div>
                                 <div class="success-message" id="passwordSuccess"></div>
-                                <form id="changePasswordForm">
+                                <form id="changePasswordForm" style="max-width: 500px; margin: 0 auto;">
                                     <div class="form-group">
                                         <label for="currentPassword">Password Saat Ini</label>
                                         <input type="password" id="currentPassword" required>
